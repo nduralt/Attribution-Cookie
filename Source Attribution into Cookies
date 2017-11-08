@@ -1,0 +1,87 @@
+//Parse the URL
+function getParameterByName(name) {
+	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+//Setting vars
+
+
+//Mobile handling for Bing Referrals
+if (document.referrer.includes("bing.com/search")) {
+	var mobileReferrer = document.referrer.split('?')[0] || '';
+}
+//Mobile handling for Yahoo Referrals
+if (document.referrer.includes("r.search.yahoo")) {
+	var mobileReferrer = document.referrer.split('/')[2] || '';
+}
+
+//Give querystring params var names
+if (location.search.includes("utm_source")) {
+	var source = getParameterByName('utm_source');
+	var medium = getParameterByName('utm_medium');
+	var campaign = getParameterByName('utm_campaign');
+	var content = getParameterByName('utm_content');
+	var term = getParameterByName('utm_term');
+
+  //Set cookies
+	if (source) {
+		Cookies.set('utm_source', source);
+	}
+	if (medium) {
+		Cookies.set('utm_medium', medium);
+	}
+	if (campaign) {
+		Cookies.set('utm_campaign', campaign);
+	}
+	if (content) {
+		Cookies.set('utm_content', content);
+	}
+	if (term) {
+		Cookies.set('utm_term', term);
+	}
+
+//when no querystring and referrer is null or "vena"
+} else if ((!location.search && !document.referrer.includes("venasolutions")) || mobileReferrer.includes("bing") || mobileReferrer.includes("yahoo")) {
+//	setTimeout(function() {
+//window.alert("Got in");
+		if (!source && !document.referrer) {
+				Cookies.set('utm_source', "(direct)");
+				Cookies.set('utm_medium', "(none)");
+				Cookies.set('utm_campaign', "(none)");
+				Cookies.set('utm_content', "(none)");
+				Cookies.set('utm_term', "(none)");
+				//window.alert("direct alert 1");
+		} else if (!source && document.referrer.includes("google")) {
+    		Cookies.set('utm_source', "google");
+      	Cookies.set('utm_medium', "organic");
+				Cookies.set('utm_campaign', "seo");
+				Cookies.set('utm_content', "(none)");
+				Cookies.set('utm_term', "(none)");
+				//window.alert("google alert 2");
+		} else if (!source && document.referrer.includes("bing")) {
+				Cookies.set('utm_source', "bing");
+				Cookies.set('utm_medium', "organic");
+				Cookies.set('utm_campaign', "seo");
+				Cookies.set('utm_content', "(none)");
+				Cookies.set('utm_term', "(none)");
+				//window.alert("bing alert 3");
+		} else if (!source && document.referrer.includes("yahoo")) {
+				Cookies.set('utm_source', "yahoo");
+				Cookies.set('utm_medium', "organic");
+				Cookies.set('utm_campaign', "seo");
+				Cookies.set('utm_content', "(none)");
+				Cookies.set('utm_term', "(none)");
+				//window.alert("yahoo alert 4");
+		} else if (!source /*&& document.referer*/ && !document.referrer.includes("google") && !document.referrer.includes("yahoo") && !document.referrer.includes("bing")) {
+				var documentReferrer = document.referrer.split('/')[2] || '';
+				Cookies.set('utm_source', documentReferrer);
+				Cookies.set('utm_medium', "referral");
+				Cookies.set('utm_campaign', "(none)");
+				Cookies.set('utm_content', "(none)");
+				Cookies.set('utm_term', "(none)");
+				//window.alert("referral alert 5");
+						/*},250); */
+		}
+}
